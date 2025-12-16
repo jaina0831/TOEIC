@@ -1,41 +1,262 @@
-<style>
-    /* ... (其他不變的樣式碼) ... */
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>測驗服務專區 - 模擬</title>
+    <style>
+        /* ==================== 基礎樣式 ==================== */
+        body {
+            font-family: Arial, "Microsoft JhengHei", sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
 
-    /* ==================== 成績顯示頁面樣式 (圖四/圖五/圖六) ==================== */
-    /* ... (中間省略，保持不變) ... */
-    
-    .application-item {
-        width: 45%;
-        border: 1px solid #ccc;
-        padding: 10px;
-        border-radius: 5px;
-    }
+        .header {
+            background-color: #003366;
+            color: white;
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
 
-    .app-icon-container {
-        font-size: 30px;
-        color: #003366;
-        margin-bottom: 5px;
-    }
+        .header-title {
+            font-size: 1.1em;
+            font-weight: bold;
+        }
 
-    /* **調整點 1: 處理時間改為黑色字體** */
-    .app-time {
-        /* color: #dc3545; <--- 移除原先的紅色 */
-        color: #000; /* 改為黑色 */
-        font-weight: bold;
-        margin: 5px 0;
-    }
+        .container {
+            padding: 20px 15px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
 
-    .app-price {
-        color: #000;
-        font-weight: bold;
-    }
-    
-    /* **新增樣式: 價格數字專用紅色** */
-    .price-number {
-        color: #dc3545; /* 紅色 */
-    }
+        .page { display: none; }
+        .page.active { display: block; }
 
-    .app-note {
-    /* ... (中間省略，保持不變) ... */
+        /* ==================== 登入頁面 (圖一) ==================== */
+        #login-page h3 { text-align: center; color: #333; }
+        .profile-icon {
+            width: 100px; height: 100px;
+            background-color: #eee;
+            border-radius: 50%;
+            margin: 20px auto;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 50px; color: #ccc;
+            border: 1px solid #ddd;
+        }
 
-</style>
+        input {
+            width: 100%; padding: 12px; margin-bottom: 12px;
+            border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;
+        }
+
+        .captcha-group { display: flex; align-items: center; margin-bottom: 20px; }
+        .captcha-group input { margin-bottom: 0; margin-right: 10px; }
+        .captcha-img {
+            background: #eee; padding: 8px 15px; font-weight: bold;
+            font-style: italic; color: #58183e; border: 1px solid #ccc;
+        }
+
+        .btn-blue {
+            width: 100%; padding: 14px; background: #007bff;
+            color: white; border: none; border-radius: 4px; font-size: 16px;
+        }
+
+        /* ==================== 列表頁面 (圖二/圖三) ==================== */
+        .list-notes {
+            background: #fff; padding: 15px; border: 1px solid #ddd;
+            font-size: 0.9em; line-height: 1.6; margin-bottom: 20px;
+        }
+
+        .exam-item {
+            background: #fff; padding: 15px; border: 1px solid #003366;
+            border-radius: 6px; display: flex; justify-content: space-between;
+            align-items: center; margin-bottom: 10px; cursor: pointer;
+        }
+
+        .exam-item span { color: #003366; font-weight: bold; display: block; }
+        .exam-date { color: #666 !important; font-size: 0.85em; font-weight: normal !important; }
+
+        /* ==================== 成績結果頁 (圖四/五/六) ==================== */
+        .result-card {
+            background: white; border: 1px dotted #999;
+            padding: 20px; text-align: center; margin-bottom: 25px;
+        }
+
+        /* 模擬時鐘 (未開放) */
+        .clock-icon {
+            width: 80px; height: 80px; border: 5px solid #ccc;
+            border-radius: 50%; margin: 15px auto; position: relative;
+        }
+        .clock-icon::after {
+            content: ""; position: absolute; width: 30px; height: 5px;
+            background: #ccc; top: 50%; left: 50%; transform-origin: left;
+            transform: rotate(-90deg);
+        }
+
+        /* 成績表格 */
+        .score-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .score-table td { padding: 10px; border-bottom: 1px solid #eee; }
+        .score-val { text-align: right; font-weight: bold; font-size: 1.2em; }
+        .val-listening { color: #007bff; }
+        .val-reading { color: #3399ff; }
+        .val-total { color: #dc3545; }
+
+        /* 申請區塊 */
+        .app-section h4 { border-bottom: 1px solid #eee; padding-bottom: 8px; color: #004085; }
+        .app-grid { display: flex; gap: 10px; }
+        .app-card {
+            flex: 1; border: 1px solid #dee2e6; border-radius: 4px;
+            padding: 10px; text-align: center; background: #fff;
+        }
+        .app-icon-container { height: 60px; display: flex; align-items: center; justify-content: center; margin-bottom: 5px; }
+        .app-icon-container img { max-width: 80px; max-height: 100%; }
+        
+        /* 顏色設定：時間為黑色，價格數字為紅色 */
+        .app-time { font-size: 0.9em; font-weight: bold; color: #000; margin: 5px 0; }
+        .app-price { font-weight: bold; color: #000; }
+        .price-red { color: #dc3545; }
+
+        .note-red { color: #dc3545; font-size: 0.85em; margin-top: 15px; border-top: 1px dashed #ccc; padding-top: 10px; }
+
+        .footer { text-align: center; font-size: 11px; color: #999; margin-top: 30px; padding-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+    <div id="app">
+        <div id="login-page" class="page active">
+            <div class="header">
+                <span>&lt;</span> <span class="header-title">測驗服務專區</span> <span>&#9776;</span>
+            </div>
+            <div class="container">
+                <h3>會員登入</h3>
+                <div class="profile-icon">👤</div>
+                <input type="text" id="acc" placeholder="帳號 (身份證字號)">
+                <input type="password" placeholder="密碼">
+                <div class="captcha-group">
+                    <input type="text" placeholder="驗證碼">
+                    <div class="captcha-img">5813</div>
+                </div>
+                <button class="btn-blue" onclick="navigateTo('query-list')">登入</button>
+            </div>
+        </div>
+
+        <div id="query-list" class="page">
+            <div class="header">
+                <span onclick="navigateTo('login-page')">&lt;</span> <span class="header-title">測驗服務專區</span> <span>&#9776;</span>
+            </div>
+            <div class="container">
+                <div style="text-align:center; font-weight:bold; margin-bottom:15px;">成績查詢</div>
+                <div class="list-notes">
+                    1. 網路查詢成績期限：開放日起14天。<br>
+                    2. 測驗紀錄保留2年。<br>
+                    3. 免費成績證明文件項目...(略)
+                </div>
+
+                <div class="exam-item" onclick="showScore('2024/12/29')">
+                    <div>
+                        <span>TOEIC® Listening and Reading Test</span>
+                        <span class="exam-date">2024/12/29</span>
+                    </div>
+                    <div style="color:#003366;">&#9654;</div>
+                </div>
+
+                <div class="exam-item" onclick="showScore('2025/11/30')">
+                    <div>
+                        <span>TOEIC® Listening and Reading Test</span>
+                        <span class="exam-date">2025/11/30</span>
+                    </div>
+                    <div style="color:#003366;">&#9654;</div>
+                </div>
+            </div>
+            <div class="footer">Copyright©2016 CHUN SHIN LIMITED. All Rights Reserved.</div>
+        </div>
+
+        <div id="result-page" class="page">
+            <div class="header">
+                <span onclick="navigateTo('query-list')">&lt;</span> <span class="header-title">測驗服務專區</span> <span>&#9776;</span>
+            </div>
+            <div class="container">
+                <div style="text-align:center; font-weight:bold; margin-bottom:15px;">成績查詢</div>
+                
+                <div class="result-card">
+                    <div style="font-size: 0.9em; font-weight:bold; margin-bottom:10px;">TOEIC® Listening and Reading Test 考試成績</div>
+                    <div id="score-display-area">
+                        </div>
+                </div>
+
+                <div class="app-section">
+                    <h4>申請證書/補發成績單</h4>
+                    <div class="app-grid">
+                        <div class="app-card">
+                            <div class="app-icon-container">
+                                <img src="20251216_135841.jpg" alt="證書">
+                            </div>
+                            <div style="font-size:0.85em; font-weight:bold;">證書一般件</div>
+                            <div class="app-time" id="cert-time">7個工作天</div>
+                            <div class="app-price">NT$ <span class="price-red" id="cert-price">600</span></div>
+                        </div>
+                        <div class="app-card">
+                            <div class="app-icon-container">
+                                <img src="20251216_135911.jpg" alt="成績單">
+                            </div>
+                            <div style="font-size:0.85em; font-weight:bold;">成績單一般件</div>
+                            <div class="app-time" id="score-time">7個工作天</div>
+                            <div class="app-price">NT$ <span class="price-red" id="score-price">200</span></div>
+                        </div>
+                    </div>
+                    <div class="note-red">
+                        <strong>注意事項</strong><br>
+                        1. 處理時間自下一個工作天起算。<br>
+                        2. 欲申請急件請至"電腦版"服務專區。
+                    </div>
+                </div>
+            </div>
+            <div class="footer">Copyright©2016 CHUN SHIN LIMITED. All Rights Reserved.</div>
+        </div>
+    </div>
+
+    <script>
+        function navigateTo(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        function showScore(date) {
+            const display = document.getElementById('score-display-area');
+            const certT = document.getElementById('cert-time');
+            const scoreT = document.getElementById('score-time');
+
+            if (date === '2024/12/29') {
+                // 模擬圖四/五：未開放
+                display.innerHTML = `
+                    <div class="clock-icon"></div>
+                    <div style="color:#666; margin-top:10px;">本場次測驗查詢成績目前未開放。</div>
+                `;
+                certT.innerText = "7個工作天";
+                scoreT.innerText = "7個工作天";
+            } else {
+                // 模擬圖六：已開放
+                display.innerHTML = `
+                    <table class="score-table">
+                        <tr><td>聽力</td><td class="score-val val-listening">380</td></tr>
+                        <tr><td>閱讀</td><td class="score-val val-reading">360</td></tr>
+                        <tr><td style="color:red; font-weight:bold;">總分</td><td class="score-val val-total">740</td></tr>
+                    </table>
+                `;
+                certT.innerText = "15個工作天";
+                scoreT.innerText = "10個工作天";
+            }
+            navigateTo('result-page');
+        }
+    </script>
+</body>
+</html>
