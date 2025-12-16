@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>測驗服務專區 - 模擬</title>
     <style>
-        /* ==================== 基礎樣式與版面 ==================== */
+        /* ==================== 基礎樣式與版面 (略，未變動) ==================== */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -47,7 +47,7 @@
             display: block;
         }
 
-        /* ==================== 登入頁面樣式 (圖一) ==================== */
+        /* ==================== 登入頁面樣式 (略，未變動) ==================== */
         #login-page .profile-icon {
             width: 100px;
             height: 100px;
@@ -66,7 +66,7 @@
             padding: 12px;
             margin-bottom: 15px;
             border: 1px solid #ccc;
-            box-sizing: border-box; /* 確保 padding 和 border 不會增加元素總寬度 */
+            box-sizing: border-box; 
             border-radius: 4px;
         }
 
@@ -104,7 +104,7 @@
         .btn-primary {
             width: 100%;
             padding: 15px;
-            background-color: #007bff; /* 藍色按鈕 */
+            background-color: #007bff; 
             color: white;
             border: none;
             border-radius: 4px;
@@ -129,7 +129,7 @@
             display: flex;
         }
 
-        /* ==================== 成績查詢列表頁面樣式 (圖二/圖三) ==================== */
+        /* ==================== 成績查詢列表頁面樣式 (略，未變動) ==================== */
         #query-list-page h3, #result-page h3 {
             text-align: center;
             margin-bottom: 20px;
@@ -176,7 +176,7 @@
             margin-bottom: 20px;
         }
 
-        /* ==================== 成績顯示頁面樣式 (圖四/圖五/圖六) ==================== */
+        /* ==================== 成績顯示頁面樣式 (顏色已修改) ==================== */
         .result-box {
             background-color: white;
             border: 1px solid #ccc;
@@ -241,18 +241,27 @@
             text-align: right;
         }
 
-        .score-value.listening {
-            color: #007bff;
+        /* 聽力 & 閱讀的數字為藍色 */
+        .score-value.blue {
+            color: #007bff; /* 藍色 */
         }
-        .score-value.reading {
-            color: #dc3545;
-        }
-        .score-value.total {
-            color: #000;
-            border-top: 1px solid #ccc;
+        
+        /* 總分的文字 (總分) 和數字為紅色 */
+        .score-label.red,
+        .score-value.red {
+            color: #dc3545; /* 紅色 */
+            font-weight: bold;
         }
 
-        /* 申請區塊 */
+        .score-label.red {
+            color: #dc3545;
+        }
+
+        .score-value.red {
+            border-top: 1px solid #ccc; 
+        }
+        
+        /* 申請區塊 (略，未變動) */
         .application-section h3 {
             margin-top: 0;
             text-align: left;
@@ -307,7 +316,7 @@
             line-height: 1.5;
         }
 
-        /* 底部版權 */
+        /* 底部版權 (略，未變動) */
         .footer {
             text-align: center;
             font-size: 0.7em;
@@ -366,7 +375,7 @@
                     <p>2. 測驗紀錄保留2年(自測驗日起算)。</p>
                     <p>3. 考生測驗當日全程參與，且無違反考試規則情事，寄發之"免費成績證明文件"項目如下：</p>
                     <ul>
-                        <li>● 成績單：TOEIC® Listening and Reading Test、... (略)</li>
+                        <li>● 成績單：TOEIC® Listening and Reading Test、TOEIC® Listening Test、TOEIC® Speaking and Writing Tests、TOEIC® Speaking Test、TOEIC Bridge® Listening and Reading Test、TOEIC Bridge® Speaking and Writing Tests、TOEIC Bridge® Speaking Test、TOEFL ITP® Tests、TOEIC® Listening Test、TOEIC® Reading Test。</li>
                         <li>● 成績單與證書：TOEFL Junior® Standard Test。</li>
                     </ul>
                 </div>
@@ -454,19 +463,16 @@
                 page.classList.remove('active');
             });
             document.getElementById(pageId).classList.add('active');
-            // 每次切換頁面，讓頁面滾動到最上方
             window.scrollTo(0, 0);
         }
 
         // 模擬登入動作：直接跳轉到查詢列表頁
         function handleLogin() {
-            // 這裡可以加入簡單的表單驗證，例如檢查欄位是否為空
             const account = document.getElementById('account').value;
             if (!account) {
                 alert('請輸入帳號！');
                 return;
             }
-            // 登入成功，切換到查詢列表頁
             showPage('query-list-page');
         }
 
@@ -474,7 +480,7 @@
         function showResult(examDate) {
             const scoreContentDiv = document.getElementById('score-content');
             let contentHTML = '';
-            let certTime = '7個工作天'; // 圖四/五
+            let certTime = '7個工作天'; 
             let scoreTime = '7個工作天';
 
             if (examDate === '2024/12/29') {
@@ -486,20 +492,20 @@
                     <div id="result-placeholder-text">本場次測驗查詢成績目前未開放。</div>
                 `;
             } else if (examDate === '2025/11/30') {
-                // 模擬圖六：成績已開放 (分數 380/360/740)
+                // 模擬圖六：成績已開放 (分數 380/360/740)，顏色已調整
                 contentHTML = `
                     <table class="score-table">
                         <tr>
                             <td class="score-label">聽力</td>
-                            <td class="score-value listening">380</td>
+                            <td class="score-value blue">380</td> 
                         </tr>
                         <tr>
                             <td class="score-label">閱讀</td>
-                            <td class="score-value reading">360</td>
+                            <td class="score-value blue">360</td>
                         </tr>
                         <tr>
-                            <td class="score-label">總分</td>
-                            <td class="score-value total">740</td>
+                            <td class="score-label red">總分</td> 
+                            <td class="score-value red">740</td>
                         </tr>
                     </table>
                 `;
